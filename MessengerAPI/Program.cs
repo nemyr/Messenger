@@ -1,11 +1,23 @@
-var builder = WebApplication.CreateBuilder(args);
+using DAL;
+using MessengerAPI.Services.Extentions;
+using MessengerAPI.Services.Repositories;
+using Microsoft.EntityFrameworkCore;
 
+var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
+builder.Services.AddConfigurationOptions(builder);
+builder.Services.AddJwtAuthentification();
+
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle.
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddDbContextFactory<ApplicationContext>(
+    options => options.UseSqlite(builder.Configuration.GetConnectionString("MessengerAPI"))
+    );
+builder.Services.AddTransient<IUserRepository, UserRepository>();
 
 var app = builder.Build();
 

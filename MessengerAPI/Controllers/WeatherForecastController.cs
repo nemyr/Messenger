@@ -1,4 +1,8 @@
+using DAL;
+using MessengerAPI.OptionsModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace MessengerAPI.Controllers
 {
@@ -13,9 +17,18 @@ namespace MessengerAPI.Controllers
 
         private readonly ILogger<WeatherForecastController> _logger;
 
-        public WeatherForecastController(ILogger<WeatherForecastController> logger)
+        public WeatherForecastController(ILogger<WeatherForecastController> logger, 
+            IDbContextFactory<ApplicationContext> contextFactory, IOptions<AuthOptions> options)
         {
             _logger = logger;
+
+            logger.LogDebug(options.Value.ISSUER);
+            logger.LogDebug(HttpContext.User.ToString());
+            /*
+            var context = contextFactory.CreateDbContext();
+            context.Users.Add(new DAL.Models.User() { Name = "123" });
+            context.SaveChanges();
+            */
         }
 
         [HttpGet(Name = "GetWeatherForecast")]
