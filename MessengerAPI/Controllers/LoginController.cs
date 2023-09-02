@@ -1,7 +1,9 @@
-﻿using MessengerAPI.OptionsModels;
+﻿using DAL.Models;
+using MessengerAPI.OptionsModels;
 using MessengerAPI.Services.Extentions;
+using MessengerAPI.Services.Helpers;
 using MessengerAPI.Services.Repositories;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -17,11 +19,13 @@ namespace MessengerAPI.Controllers
     {
         private readonly IUserRepository _userRepository;
         private readonly IOptions<AuthOptions> _authOptions;
+        private readonly IJwtHelper jwtHelper;
 
-        public LoginController(IUserRepository userRepository, IOptions<AuthOptions> authOptions)
+        public LoginController(IUserRepository userRepository, IOptions<AuthOptions> authOptions, IJwtHelper jwtHelper)
         {
             _userRepository = userRepository;
             _authOptions = authOptions;
+            this.jwtHelper = jwtHelper;
         }
 
         [HttpPost]
@@ -42,29 +46,20 @@ namespace MessengerAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> Login([FromBody] AuthData aData)
         {
-            if (!await _userRepository.IsAccountExistsAsync(aData.Name, aData.Password))
+            var account = await _userRepository.GetAccountAsync(aData.Name, aData.Password);
+            if (account is null)
                 return Unauthorized();
 
-            var claims = new List<Claim>() { new Claim(ClaimTypes.Name, aData.Name) };
-
-            var jwt = new JwtSecurityToken(
-            issuer: _authOptions.Value.ISSUER,
-            audience: _authOptions.Value.AUDIENCE,
-            claims: claims,
-            expires: DateTime.UtcNow.Add(TimeSpan.FromMinutes(2)),
-            signingCredentials: new SigningCredentials(
-                AuthentificationServiceExtention.GetSymmetricSecurityKey(_authOptions.Value.KEY),
-                SecurityAlgorithms.HmacSha256)
-            );
-
-            var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
-
+            var encodedJwt = jwtHelper.CreateToken(account);
+            
             return Ok(new AuthResult { AccessToken = encodedJwt, UserName = aData.Name });
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> Logout()
         {
+            Account user = (Account)HttpContext.Items["User"];
             return Ok();
         }
     }

@@ -7,6 +7,9 @@ namespace DAL
     {
         public DbSet<User> Users { get; set; }
         public DbSet<Account> Accounts { get; set; }
+        public DbSet<Message> Messages { get; set; }
+        public DbSet<Chat> Chats { get; set; }
+
 
         public ApplicationContext(DbContextOptions options) : base(options)
         {

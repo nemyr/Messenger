@@ -1,19 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace DAL.Models
+﻿namespace DAL.Models
 {
-    internal class Message
+    public class Message : BaseEntity<long>
     {
-        [Key]
-        public int Id { get; set; }
-        public User User { get; set; }
-        public Chat Chat { get; set; }
-        public string Content { get; set; }
-        public DateTime Date { get; set; }
+        public User User { get; set; } = null!;
+        public Chat Chat { get; set; } = null!;
+        public string Content { get; set; } = null!;
+        public DateTime Date { get; set; } = DateTime.Now;
     }
 }

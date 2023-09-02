@@ -1,4 +1,5 @@
 ﻿using MessengerAPI.OptionsModels;
+using MessengerAPI.Services.Helpers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -33,6 +34,8 @@ namespace MessengerAPI.Services.Extentions
                       ValidateIssuerSigningKey = true,
                   };
               });
+            services.AddTransient<IJwtHelper, JwtHelper>();
+
             return services;
         }
 

@@ -3,6 +3,7 @@ using MessengerAPI.OptionsModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using System.Security.Claims;
 
 namespace MessengerAPI.Controllers
 {
@@ -22,8 +23,9 @@ namespace MessengerAPI.Controllers
         {
             _logger = logger;
 
-            logger.LogDebug(options.Value.ISSUER);
-            logger.LogDebug(HttpContext.User.ToString());
+            //logger.LogDebug(options.Value.ISSUER);
+            //logger.LogDebug(user.ToString());
+            //throw new Exception("eee");
             /*
             var context = contextFactory.CreateDbContext();
             context.Users.Add(new DAL.Models.User() { Name = "123" });
@@ -34,6 +36,7 @@ namespace MessengerAPI.Controllers
         [HttpGet(Name = "GetWeatherForecast")]
         public IEnumerable<WeatherForecast> Get()
         {
+            //int itm = (int)HttpContext.Items["itm"];
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {
                 Date = DateTime.Now.AddDays(index),

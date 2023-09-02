@@ -35,9 +35,13 @@ namespace MessengerAPI.Services.Repositories
             return true;
         }
 
-        public Task<bool> IsAccountExistsAsync(string name, string password)
-        {
-            return _dbContext.Accounts.AnyAsync(a => a.Name == name && a.Password == password);
-        }
+        public Task<Account?> GetAccountAsync(Guid id) => 
+            _dbContext.Accounts.FirstOrDefaultAsync(u => u.Id == id);
+
+        public Task<Account?> GetAccountAsync(string name, string password) => 
+            _dbContext.Accounts.FirstOrDefaultAsync(a => a.Name == name && a.Password == password);
+
+        public Task<bool> IsAccountExistsAsync(string name, string password) => 
+            _dbContext.Accounts.AnyAsync(a => a.Name == name && a.Password == password);
     }
 }
