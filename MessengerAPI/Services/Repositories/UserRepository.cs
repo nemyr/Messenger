@@ -15,7 +15,9 @@ namespace MessengerAPI.Services.Repositories
 
         public async Task<bool> CreateAccountAsync(string name, string password)
         {
-            //todo: check if user name exists
+            if (await _dbContext.Accounts.FirstOrDefaultAsync(a => a.Name == name) != null)
+                return false;
+
             Account account = new ()
             {
                 Name = name,

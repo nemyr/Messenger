@@ -1,15 +1,8 @@
-﻿using DAL.Models;
-using MessengerAPI.OptionsModels;
-using MessengerAPI.Services.Extentions;
-using MessengerAPI.Services.Helpers;
+﻿using MessengerAPI.Services.Helpers;
 using MessengerAPI.Services.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 using Models.Authentification;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 
 namespace MessengerAPI.Controllers
 {
@@ -18,13 +11,11 @@ namespace MessengerAPI.Controllers
     public class LoginController : ControllerBase
     {
         private readonly IUserRepository _userRepository;
-        private readonly IOptions<AuthOptions> _authOptions;
         private readonly IJwtHelper jwtHelper;
 
-        public LoginController(IUserRepository userRepository, IOptions<AuthOptions> authOptions, IJwtHelper jwtHelper)
+        public LoginController(IUserRepository userRepository, IJwtHelper jwtHelper)
         {
             _userRepository = userRepository;
-            _authOptions = authOptions;
             this.jwtHelper = jwtHelper;
         }
 
@@ -57,9 +48,8 @@ namespace MessengerAPI.Controllers
 
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> Logout()
+        public IActionResult Logout()
         {
-            Account user = (Account)HttpContext.Items["User"];
             return Ok();
         }
     }

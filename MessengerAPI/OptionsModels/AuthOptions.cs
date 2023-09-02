@@ -1,7 +1,4 @@
-﻿using Microsoft.IdentityModel.Tokens;
-using System.Text;
-
-namespace MessengerAPI.OptionsModels
+﻿namespace MessengerAPI.OptionsModels
 {
     public class AuthOptions
     {

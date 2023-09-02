@@ -1,14 +1,10 @@
 ﻿using DAL.Models;
 using MessengerAPI.OptionsModels;
 using MessengerAPI.Services.Extentions;
-using MessengerAPI.Services.Repositories;
-using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using Models.Authentification;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Text;
 
 namespace MessengerAPI.Services.Helpers
 {
