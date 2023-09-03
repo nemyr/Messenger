@@ -1,8 +1,12 @@
-﻿using MessengerAPI.Services.Helpers;
+﻿using MessengerAPI.OptionsModels;
+using MessengerAPI.Services.Helpers;
 using MessengerAPI.Services.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Models.Authentification;
+using System.Diagnostics.CodeAnalysis;
+using System.Security.Claims;
 
 namespace MessengerAPI.Controllers
 {
@@ -12,11 +16,13 @@ namespace MessengerAPI.Controllers
     {
         private readonly IUserRepository _userRepository;
         private readonly IJwtHelper jwtHelper;
+        private readonly IOptions<AuthOptions> authOptions;
 
-        public LoginController(IUserRepository userRepository, IJwtHelper jwtHelper)
+        public LoginController(IUserRepository userRepository, IJwtHelper jwtHelper, IOptions<AuthOptions> authOptions)
         {
             _userRepository = userRepository;
             this.jwtHelper = jwtHelper;
+            this.authOptions = authOptions;
         }
 
         [HttpPost]
@@ -42,15 +48,62 @@ namespace MessengerAPI.Controllers
                 return Unauthorized();
 
             var encodedJwt = jwtHelper.CreateToken(account);
+            var refreshToken = jwtHelper.GenerateRefreshToken();
             
-            return Ok(new AuthResult { AccessToken = encodedJwt, UserName = aData.Name });
+            if (!await _userRepository.SetRefreshTokenAsync(account.Id, refreshToken))
+                return BadRequest();
+
+            return Ok(new AuthResult
+            {
+                AccessToken = encodedJwt,
+                RefreshToken = refreshToken,
+            });
         }
 
         [HttpPost]
-        [Authorize]
-        public IActionResult Logout()
+        public async Task<IActionResult> Refresh([NotNull]JwtApiModel model)
         {
-            return Ok();
+            if (!ModelState.IsValid)
+                return BadRequest();
+
+            var principal = jwtHelper.GetPrincipalFromExpiredToken(model.AccessToken);
+            var userId = principal.FindFirstValue(authOptions.Value.ClaimId);
+            if (userId == null)
+                return BadRequest();
+
+            var account = await _userRepository.GetAccountAsync(Guid.Parse(userId));
+            if (account is null)
+                return BadRequest();
+
+            if(account.RefreshToken != model.RefreshToken || account.ExpireRefreshToken <= DateTime.Now) 
+                return BadRequest();
+
+            var result = new JwtApiModel
+            {
+                AccessToken = jwtHelper.CreateToken(account),
+                RefreshToken = jwtHelper.GenerateRefreshToken()
+            };
+
+            if(!await _userRepository.SetRefreshTokenAsync(account.Id, result.RefreshToken)) 
+                return BadRequest();
+
+            return Ok(result);
+        }
+
+        [HttpPost, Authorize]
+        public async Task<IActionResult> LogoutAsync()
+        {
+            var userId = User.FindFirstValue(authOptions.Value.ClaimId);
+            if (userId == null) 
+                return BadRequest();
+
+            var userGuid = Guid.Parse(userId);
+            var account = await _userRepository.GetAccountAsync(userGuid);
+            if (account is null) 
+                return BadRequest();
+
+            await _userRepository.SetRefreshTokenAsync(userGuid, string.Empty);
+            return NoContent();
         }
     }
 }

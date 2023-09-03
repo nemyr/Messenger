@@ -36,7 +36,9 @@ namespace MessengerAPI.Middlewares
                         userTask.Wait();
                         httpContext.Items["User"] = userTask.Result;
                     }
-                } catch (SecurityTokenException)
+                } 
+                catch (SecurityTokenExpiredException) { }
+                catch (SecurityTokenException)
                 {
                     httpContext.Response.StatusCode = StatusCodes.Status401Unauthorized; 
                     return Task.CompletedTask;

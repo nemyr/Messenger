@@ -45,5 +45,16 @@ namespace MessengerAPI.Services.Repositories
 
         public Task<bool> IsAccountExistsAsync(string name, string password) => 
             _dbContext.Accounts.AnyAsync(a => a.Name == name && a.Password == password);
+
+        public async Task<bool> SetRefreshTokenAsync(Guid userId, string token)
+        {
+            var account = await GetAccountAsync(userId);
+            if (account == null) 
+                return false;
+            account.RefreshToken = token;
+            account.ExpireRefreshToken = DateTime.Now.AddDays(7);
+            await _dbContext.SaveChangesAsync();
+            return true;
+        }
     }
 }
