@@ -1,14 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace DAL.Models
+﻿namespace DAL.Models
 {
-    public class Chat : BaseEntity<Guid>
+    public class Chat : BaseEntity<ulong>
     {
-        public List<User> Users { get; set; } = null!;
+        public List<UserChat> UserChats { get; set; } = null!;
     }
 }

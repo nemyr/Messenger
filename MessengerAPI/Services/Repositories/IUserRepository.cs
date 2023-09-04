@@ -9,5 +9,6 @@ namespace MessengerAPI.Services.Repositories
         Task<Account?> GetAccountAsync(Guid id);
         Task<Account?> GetAccountAsync(string name, string password);
         Task<bool> SetRefreshTokenAsync(Guid userId, string token);
+        Task<User?> GetUserByAccountIdAsync(Guid accountId);
     }
 }

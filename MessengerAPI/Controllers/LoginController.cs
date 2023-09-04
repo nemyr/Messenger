@@ -75,7 +75,7 @@ namespace MessengerAPI.Controllers
             if (account is null)
                 return BadRequest();
 
-            if(account.RefreshToken != model.RefreshToken || account.ExpireRefreshToken <= DateTime.Now) 
+            if(account.RefreshToken != model.RefreshToken || account.ExpireRefreshToken <= DateTime.UtcNow) 
                 return BadRequest();
 
             var result = new JwtApiModel

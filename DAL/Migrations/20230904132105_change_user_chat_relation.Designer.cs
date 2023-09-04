@@ -3,6 +3,7 @@ using System;
 using DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DAL.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20230904132105_change_user_chat_relation")]
+    partial class change_user_chat_relation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.10");
@@ -21,9 +24,6 @@ namespace DAL.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime?>("Created")
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("ExpireRefreshToken")
@@ -44,7 +44,7 @@ namespace DAL.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime?>("Updated")
+                    b.Property<DateTime>("RegisteredDate")
                         .HasColumnType("TEXT");
 
                     b.Property<Guid>("UserId")
@@ -59,9 +59,9 @@ namespace DAL.Migrations
 
             modelBuilder.Entity("DAL.Models.Chat", b =>
                 {
-                    b.Property<ulong>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -70,7 +70,7 @@ namespace DAL.Migrations
 
             modelBuilder.Entity("DAL.Models.Contact", b =>
                 {
-                    b.Property<ulong>("Id")
+                    b.Property<uint>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
@@ -89,21 +89,18 @@ namespace DAL.Migrations
 
             modelBuilder.Entity("DAL.Models.Message", b =>
                 {
-                    b.Property<ulong>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<ulong>("ChatId")
-                        .HasColumnType("INTEGER");
+                    b.Property<Guid>("ChatId")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Content")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime?>("Created")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime?>("Updated")
+                    b.Property<DateTime>("Date")
                         .HasColumnType("TEXT");
 
                     b.Property<Guid>("UserId")
@@ -135,12 +132,12 @@ namespace DAL.Migrations
 
             modelBuilder.Entity("DAL.Models.UserChat", b =>
                 {
-                    b.Property<ulong>("Id")
+                    b.Property<uint>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<ulong>("ChatId")
-                        .HasColumnType("INTEGER");
+                    b.Property<Guid>("ChatId")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("DisplayedName")
                         .IsRequired()

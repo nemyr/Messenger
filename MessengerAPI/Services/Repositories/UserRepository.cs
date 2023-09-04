@@ -22,7 +22,7 @@ namespace MessengerAPI.Services.Repositories
             {
                 Name = name,
                 Password = password,
-                RegisteredDate = DateTime.UtcNow,
+                Created = DateTime.UtcNow,
             };
 
             User user = new ()
@@ -43,6 +43,12 @@ namespace MessengerAPI.Services.Repositories
         public Task<Account?> GetAccountAsync(string name, string password) => 
             _dbContext.Accounts.FirstOrDefaultAsync(a => a.Name == name && a.Password == password);
 
+        public async Task<User?> GetUserByAccountIdAsync(Guid accountId)
+        {
+            var account = await _dbContext.Accounts.Include(a => a.User).FirstOrDefaultAsync(a => a.Id == accountId);
+            return account?.User;
+        }
+
         public Task<bool> IsAccountExistsAsync(string name, string password) => 
             _dbContext.Accounts.AnyAsync(a => a.Name == name && a.Password == password);
 
@@ -52,7 +58,7 @@ namespace MessengerAPI.Services.Repositories
             if (account == null) 
                 return false;
             account.RefreshToken = token;
-            account.ExpireRefreshToken = DateTime.Now.AddDays(7);
+            account.ExpireRefreshToken = DateTime.UtcNow.AddDays(7);
             await _dbContext.SaveChangesAsync();
             return true;
         }

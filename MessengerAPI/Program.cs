@@ -13,6 +13,7 @@ builder.Services.AddJwtAuthentification();
 
 builder.Services.AddControllers(options =>
 {
+    //options.ModelBinderProviders.Add();
     options.Filters.Add<ExceptionFilter>();
 });
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle.
@@ -20,6 +21,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContextFactory<ApplicationContext>(
+    //todo: add model binder for user account
     options => options.UseSqlite(builder.Configuration.GetConnectionString("MessengerAPI"))
     );
 builder.Services.AddTransient<IUserRepository, UserRepository>();
@@ -35,6 +37,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+//todo: decide if it is necessary
 //app.UseJwtMiddleware();
 app.UseAuthentication();
 app.UseAuthorization();

@@ -1,5 +1,4 @@
 ﻿using DAL.Models;
-using Models.Authentification;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
