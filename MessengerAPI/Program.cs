@@ -41,7 +41,7 @@ app.UseHttpsRedirection();
 //app.UseJwtMiddleware();
 app.UseAuthentication();
 app.UseAuthorization();
-
+app.UseUserDataMiddleware();
 app.MapControllers();
 
 app.Run();
