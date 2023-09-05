@@ -1,4 +1,5 @@
-﻿using MessengerAPI.OptionsModels;
+﻿using DAL.Models;
+using MessengerAPI.OptionsModels;
 using MessengerAPI.Services.Helpers;
 using MessengerAPI.Services.Repositories;
 using Microsoft.AspNetCore.Authorization;
@@ -91,18 +92,12 @@ namespace MessengerAPI.Controllers
         }
 
         [HttpPost, Authorize]
-        public async Task<IActionResult> LogoutAsync()
+        public async Task<IActionResult> LogoutAsync(Account account)
         {
-            var userId = User.FindFirstValue(authOptions.Value.ClaimId);
-            if (userId == null) 
-                return BadRequest();
-
-            var userGuid = Guid.Parse(userId);
-            var account = await _userRepository.GetAccountAsync(userGuid);
             if (account is null) 
                 return BadRequest();
 
-            await _userRepository.SetRefreshTokenAsync(userGuid, string.Empty);
+            await _userRepository.SetRefreshTokenAsync(account.Id, string.Empty);
             return NoContent();
         }
     }

@@ -1,4 +1,5 @@
-﻿using MessengerAPI.OptionsModels;
+﻿using DAL.Models;
+using MessengerAPI.OptionsModels;
 using MessengerAPI.Services.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -25,21 +26,19 @@ namespace MessengerAPI.Middlewares
 
         public Task Invoke(HttpContext httpContext)
         {
-
             if (!httpContext.User.Identity?.IsAuthenticated ?? false)
                 return _next(httpContext);
 
             var uId = httpContext.User.FindFirstValue(options.Value.ClaimId);
             if (uId == null)
                 return _next(httpContext);
+
             var userGuid = Guid.Parse(uId);
-            
             var accountTask = userRepository.GetAccountAsync(userGuid);
             var userTask = userRepository.GetUserByAccountIdAsync(userGuid);
             Task.WaitAll(accountTask, userTask);
-            httpContext.Items["Account"] = accountTask.Result;
-            httpContext.Items["User"] = userTask.Result;
-
+            httpContext.Items[typeof(Account).Name] = accountTask.Result;
+            httpContext.Items[typeof(User).Name] = userTask.Result;
             return _next(httpContext);
         }
     }

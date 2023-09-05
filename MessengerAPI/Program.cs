@@ -1,6 +1,7 @@
 using DAL;
 using MessengerAPI.Filters;
 using MessengerAPI.Middlewares;
+using MessengerAPI.ModelBinders;
 using MessengerAPI.Services.Extentions;
 using MessengerAPI.Services.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -13,7 +14,8 @@ builder.Services.AddJwtAuthentification();
 
 builder.Services.AddControllers(options =>
 {
-    //options.ModelBinderProviders.Add();
+    //todo: add model binder for user account
+    options.ModelBinderProviders.Insert(0, new UserModelBinderProvider());
     options.Filters.Add<ExceptionFilter>();
 });
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle.
@@ -21,7 +23,6 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContextFactory<ApplicationContext>(
-    //todo: add model binder for user account
     options => options.UseSqlite(builder.Configuration.GetConnectionString("MessengerAPI"))
     );
 builder.Services.AddTransient<IUserRepository, UserRepository>();
